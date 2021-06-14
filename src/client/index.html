@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="jquery-3.4.1.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="web3.min.js"></script>
+    <!-- Contract abis -->
+    <script src="abi.js"></script>
+    <script src="index.js"></script>
+
+    <title>Escrow Contract</title>
+</head>
+<body 
+style="background: linear-gradient(90deg, rgb(116, 91, 155) 0%, rgba(136,104,179,1) 34%, rgba(116, 91, 155) 100%);">
+
+    <!-- HEADER -->
+    <nav class="navbar navbar-light bg-light pb-0"  style="background: linear-gradient(90deg, rgba(116, 91, 155) 0%, rgba(136,104,179,1) 34%, rgba(116, 91, 155) 100%);">
+        <a class="navbar-brand" href="#" style="color: #fff">     
+        <img src="https://avatars.githubusercontent.com/u/35362810?v=4" width="30" height="30" class="d-inline-block align-top" alt="" />
+        Escrow Contract
+        </a> 
+        <div class="nav-item">
+            <h6>Latest contract Event</h6>
+            <p id="event" style="color: #fff">waiting for event</p>
+        </div>
+        <div className="navbar-nav ml-auto">
+            <p className="nav-item">
+               <h6>You are connected with account</h6>
+                <span className="navbar-text" > 
+                <a
+                style="color: #ffffff"
+                id="spanUserAccount"
+                className="nav-link small"
+                href=""
+                target="_blank"
+                rel="noopener noreferrer"
+                >
+                </a>
+                </span>
+            </p>
+
+        </div>
+    </nav>  
+
+    <div class="container pb-5">
+        <div class="row" >
+          <div class="col-sm" style="padding-top: 1.5rem;">
+            
+                <!-- CONTRACT DATA -->
+
+                <div class="card"  >
+                    <h5 class="card-header">
+                    Contract Data</h5>
+                    <div class="card-body">
+                      <h5 class="card-title">Seller</h5>
+                      <p class="card-text" id="cdSeller"></p>
+                      <h5 class="card-title">Buyer</h5>
+                      <p class="card-text" id="cdBuyer"></p>
+                      <h5 class="card-title">Price</h5>
+                      <p class="card-text" id="cdPrice"></p>
+                      <h5 class="card-title">Current State</h5>
+                      <p class="card-text" id="cdCurrentState"></p>
+                      <h5 class="card-title">Is Seller In?</h5>
+                      <p class="card-text" id="cdSellerIn"></p>
+                      <h5 class="card-title">Is Buyer In?</h5>
+                      <p class="card-text" id="cdBuyerIn"></p>
+                    </div>
+                </div>
+          </div>
+
+          <div class="col-sm" style="padding-top: 1.5rem;" id="UICol">
+              <!-- UI -->
+                <div class="card" id="UI">
+                
+                </div>
+             
+              </div>
+          </div>
+     
+
+        </div>
+      </div>
+
+
+    
+
+</body>
+</html>

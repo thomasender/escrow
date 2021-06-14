@@ -45,6 +45,11 @@ contract("Escrow", async (accounts) => {
                 result = await escrow.currentState();
                 result.toString().should.equal("0");
             })
+            it('should emit correct event', async () => {
+                let result = await escrow.contractInit({from: buyer});
+                let event = result.logs[0].event;
+                event.toString().should.equal("buyerInitialized");
+            })
             it('should initialize seller correctly', async () => {
                 await escrow.contractInit({from: seller});
                 let result = await escrow.sellerIsIn();
@@ -61,6 +66,14 @@ contract("Escrow", async (accounts) => {
                 result.should.equal(true);
                 result = await escrow.currentState();
                 result.toString().should.equal("1");
+            })
+            it('should emit correct event when initialized correctly', async () => {
+                await escrow.contractInit({from: buyer});
+                let result = await escrow.contractInit({from: seller});
+                let event = result.logs[0].event;
+                event.toString().should.equal("sellerInitialized");
+                event = result.logs[1].event;
+                event.toString().should.equal("contractInitiated");
             })
         })
         describe('failure', () => {
@@ -87,6 +100,11 @@ contract("Escrow", async (accounts) => {
                 await escrow.deposit({from: buyer, value: price});
                 let result = await escrow.currentState();
                 result.toString().should.equal("2");
+            })
+            it('should emit correct event', async () => {
+                let result = await escrow.deposit({from: buyer, value: price});
+                const event = result.logs[0].event;
+                event.toString().should.equal("buyerDeposit");
             })
         })
         describe('failure', () => {
@@ -117,6 +135,12 @@ contract("Escrow", async (accounts) => {
                 let result = await escrow.currentState();
                 result.toString().should.equal("3");
             })
+            it('should emit correct event when delivery confirmed', async () => {
+                await escrow.deposit({from: buyer, value: price}); 
+                let result = await escrow.confirmDelivery({from: buyer});
+                const event = result.logs[0].event;
+                event.toString().should.equal("deliveryConfirmed");
+            })
         })
         describe('failure', () => {
             it('should throw if called by not buyer', async () => {
@@ -137,9 +161,17 @@ contract("Escrow", async (accounts) => {
         })
         
         describe('success', () => {
-            it('should allow to withdraw before confirmation', async () => {
+            it('should allow to withdraw before confirmation and set state correctly', async () => {
                 await escrow.deposit({from: buyer, value: price}); 
                 await escrow.withdraw({from: buyer});
+                let result = await escrow.currentState();
+                result.toString().should.equal("1");
+            })
+            it('should emit correct event when buyerWithdraw', async () => {
+                await escrow.deposit({from: buyer, value: price}); 
+                let result = await escrow.withdraw({from: buyer});
+                const event = result.logs[0].event;
+                event.toString().should.equal("buyerWithdraw");
             })
         })
         describe('failure', () => {

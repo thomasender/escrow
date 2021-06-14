@@ -3,14 +3,22 @@ import Escrow from '../abis/escrow.json';
 import { 
     web3Loaded,
     web3AccountLoaded,
-    escrowLoaded
+    escrowLoaded,
+    buyerLoaded,
+    sellerLoaded,
+    priceLoaded,
+    currentStateLoaded,
+    isBuyerInLoaded,
+    isSellerInLoaded,
+    buyerInitialized
 } from './actions';
 
 
 //loadWeb3
 export const loadWeb3 = async (dispatch) => {
-    window.ethereum.enable();
+    
     if(typeof window.ethereum !== 'undefined' ){
+        window.ethereum.enable();
         const web3 = new Web3(window.ethereum);
         dispatch(web3Loaded(web3));
         return web3 
@@ -48,4 +56,113 @@ export const loadEscrow = async(web3, networkId, dispatch) => {
         window.alert("Contract not deployed to the current network. Please select another network with Metamask.");
         return null
     }
+}
+
+//loadBuyer
+export const loadBuyer = async(escrow, dispatch) => {
+    const buyer = await escrow.methods.buyer().call();
+    dispatch(buyerLoaded(buyer));
+    return buyer;
+}
+
+//loadSeller
+export const loadSeller = async(escrow, dispatch) => {
+    const seller = await escrow.methods.seller().call();
+    dispatch(sellerLoaded(seller));
+    return seller;
+}
+
+//loadPrice
+export const loadPrice = async(escrow, dispatch) => {
+    const price = await escrow.methods.price().call();
+    dispatch(priceLoaded(price));
+    return price;
+}
+
+//loadStatus
+export const loadCurrentState = async(escrow, dispatch) => {
+    const currentState = await escrow.methods.currentState().call();
+    dispatch(currentStateLoaded(currentState));
+    return currentState;
+}
+
+//loadIsBuyerIn
+export const loadIsBuyerIn = async(escrow, dispatch) => {
+    const isBuyerIn = await escrow.methods.buyerIsIn().call();
+    dispatch(isBuyerInLoaded(isBuyerIn));
+    return isBuyerIn;
+}
+
+//loadIsSellerIn
+export const loadIsSellerIn = async(escrow, dispatch) => {
+    const isSellerIn = await escrow.methods.sellerIsIn().call();
+    dispatch(isSellerInLoaded(isSellerIn));
+    return isSellerIn;
+}
+
+//buyerInitialize
+export const buyerInitialize = async(escrow, account, dispatch) => {
+    await escrow.methods.contractInit().send({from: account})
+    .on('transactionHash', async (hash) => {
+        const isBuyerIn = await escrow.methods.buyerIsIn().call();
+        dispatch(isBuyerInLoaded(isBuyerIn));
+        dispatch(buyerInitialized());
+        const currentState = await escrow.methods.currentState().call();
+        dispatch(currentStateLoaded(currentState));
+
+    })
+    .on('error', (error) => {
+        console.error(error);
+        window.alert("There was an error! Check console for more information!");
+    })
+}
+
+//buyerPayment
+export const buyerPayment = async (escrow, account, price, web3, dispatch) => {
+    await escrow.methods.deposit().send({from: account, value: price})
+    .on('transactionHash', async (hash) => {
+        let buyerDidPay = await escrow.methods.buyerDidPay().call();
+        await dispatch(buyerDidPay(buyerDidPay));   
+    })
+    .on('error', (error) => {
+        console.error(error);
+        window.alert("There was an error! Check console for more information!");
+    })
+}
+
+//sellerInitialize
+export const sellerInitialize = async (escrow, account, dispatch) => {
+    await escrow.methods.contractInit().send({from: account})
+    .on('transactionHash', async (hash) => {
+        const isSellerIn = await escrow.methods.sellerIsIn().call();
+        dispatch(isSellerInLoaded(isSellerIn));
+        const currentState = await escrow.methods.currentState().call();
+        dispatch(currentStateLoaded(currentState));
+
+    })
+    .on('error', (error) => {
+        console.error(error);
+        window.alert("There was an error! Check console for more information!");
+    })
+}
+
+export const subscribeToEvents = async (escrow, dispatch) => {
+    escrow.events.sellerInitialized({}, (error, event) => {
+        console.log(event.returnValues);
+    })
+    escrow.events.buyerInitialized({}, (error, event) => {
+
+    })
+    escrow.events.contractInitiated({}, (error, event) => {
+
+    })
+    escrow.events.buyerDeposit({}, (error, event) => {
+        
+    })
+    escrow.events.deliveryConfirmed({}, (error, event) => {
+        
+    })
+    escrow.events.buyerWithdraw({}, (error, event) => {
+        
+    })
 }

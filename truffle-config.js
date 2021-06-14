@@ -1,8 +1,11 @@
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
+const { mnemonic } = require('./secrets.json');
+// const { projectId } = require('./secrets.json');
+
 
 module.exports = {
  
@@ -19,13 +22,23 @@ module.exports = {
       network_id: "5777",       // Any network (default: none)
      },
      ropsten: {
-       provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/${projectId}`),
+       provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/f38c35eb42294d27a7704fef604a2f12`),
        network_id: 3,       // Ropsten's id
        gas: 5500000,        // Ropsten has a lower block limit than mainnet
        confirmations: 2,    // # of confs to wait between deployments. (default: 0)
        timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
        skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
      },
+     Mumbai: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, `https://rpc-mumbai.matic.today`),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      gasPrice: 100000000000,
+      gas: 6721975 // gas limit 
+    },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

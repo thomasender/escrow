@@ -5,13 +5,21 @@ import { connect } from 'react-redux';
 import { 
   loadWeb3,
   loadAccount,
-  loadEscrow
+  loadEscrow,
+  loadBuyer,
+  loadSeller,
+  loadPrice,
+  loadCurrentState,
+  loadIsBuyerIn,
+  loadIsSellerIn
 } from '../store/interactions';
 
 import { 
-  escrowLoadedSelector
+  escrowLoadedSelector,
 } from '../store/selectors'
 
+import Content from './Content'
+import Navbar from './Navbar'
 
 class App extends Component {
 
@@ -28,6 +36,12 @@ class App extends Component {
     const networkId = await web3.eth.net.getId();
 
     const escrow = await loadEscrow(web3, networkId, dispatch);
+    await loadBuyer(escrow, dispatch);
+    await loadSeller(escrow, dispatch);
+    await loadPrice(escrow, dispatch);
+    await loadCurrentState(escrow, dispatch);
+    await loadIsBuyerIn(escrow, dispatch);
+    await loadIsSellerIn(escrow, dispatch);
 
     if(!escrow){
       window.alert("Contract is not deployed to this network, please choose another network!");
@@ -40,8 +54,8 @@ class App extends Component {
   render() {
     return(
       <div>
-         <h1>Escrow</h1>
-        { this.props.escrowLoaded ? <h1>Contract Loaded!</h1> : <h1>Contract NOT Loaded!</h1>}
+        <Navbar />
+         { this.props.escrowLoaded ? <Content /> : <h1>Loading</h1> } 
       </div>
     )
   }

@@ -1,5 +1,6 @@
 const Escrow = artifacts.require("Escrow");
 
+
 let price = "1";
 
 module.exports = async (deployer, network, accounts) => {
